@@ -2,6 +2,8 @@
 Vasu :- A lightweight, open-source SIEM &amp; XDR system inspired by Wazuh.
 -----------------
 
+![Logo - Smiling](/docs/images/vasu_smile.png)
+
 - the core MVP concept will be a small demo-able e2e system.
 - the agent collects system metrics and logs 
 - the server ingests and stores data , communicates with database .etc
