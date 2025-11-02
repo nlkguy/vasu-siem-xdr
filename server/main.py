@@ -6,6 +6,8 @@
 # redo in sqlite local db
 # todo - postgreql
 
+from datetime import datetime
+
 
 from fastapi import FastAPI
 from fastapi import Request
@@ -43,7 +45,7 @@ def save_log(payload: Dict[str, Any]) -> None:
             f.write("\n")
     except Exception as e:
         print(f"Error writing log: {e}")
-        
+
 # load logs from file
 def load_logs(limit: int = 20):
     if not os.path.exists(LOG_DATA_FILE):
@@ -68,15 +70,19 @@ def root():
         "author" : "https://github.com/nlkguy"
     }
 
-@app.get("/recent")
-def recent():
-    recents = {}
-    for i in range(20):
-        recents[i] = random.random()
-    return recents
 
 
-
+@app.get("/status")
+def status():
+    log_count = 0
+    if os.path.exists(LOG_DATA_FILE):
+        log_count = sum(1 for _ in open(LOG_DATA_FILE))
+    return {
+        "server_time": datetime.now().isoformat(),
+        "log_count": log_count,
+        "random_seed": random.randint(1000, 9999),
+        "status": "active"
+    } 
 
 
 # ---------------- ingest -----------------------
