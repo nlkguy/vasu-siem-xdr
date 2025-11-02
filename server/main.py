@@ -93,3 +93,14 @@ async def ingest(request: Request):
     print(data)
     return {"status": "OKAY!"}
 
+
+
+"""
+@app.get("/recent")
+def recent():
+    recents = {}
+    for i in range(20):
+        recents[i] = random.random()
+    return recents
+
+"""
