@@ -80,19 +80,30 @@ def status():
     return {
         "server_time": datetime.now().isoformat(),
         "log_count": log_count,
-        "random_seed": random.randint(1000, 9999),
+        "random_seed": random.randint(1000000, 9999999),
         "status": "active"
     } 
 
+
+@app.get("/recent")
+def recent(limit: int = 10):
+    logs = load_logs(limit)
+    return {"count": len(logs), "data": logs}
 
 # ---------------- ingest -----------------------
 
 @app.post("/ingest")
 async def ingest(request: Request):
-    data = await request.json()
-    print(data)
-    return {"status": "OKAY!"}
-
+    try:
+        data = await request.json()
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"[{ts}] Data received from {data.get('system', {}).get('hostname', 'unknown')}")
+        #print(data)
+        save_log(data)
+        return {"status": "OKAY!"}
+    except Exception as e:
+        print(f"Error ingesting: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 """
