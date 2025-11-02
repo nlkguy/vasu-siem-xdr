@@ -2,12 +2,17 @@
 # author - nlkguy
 # /server/main.py
 
+# temp stirage in json file
+# redo in sqlite local db
+# todo - postgreql
 
 
 from fastapi import FastAPI
 from fastapi import Request
-import random
+from typing import Any, Dict
 
+import random, os, json
+# ✅ ⚠️ ❌ 
 app = FastAPI(
     title="Vasu Server"
 )
@@ -22,13 +27,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+LOG_DATA_FILE = "data/logs.json"
+os.makedirs("data", exist_ok=True)
+
+
+
+# ---- funcs -------
+
+
+# save log to file
+def save_log(payload: Dict[str, Any]) -> None:
+    try:
+        with open(LOG_DATA_FILE, "a") as f:
+            json.dump(payload, f)
+            f.write("\n")
+    except Exception as e:
+        print(f"Error writing log: {e}")
+        
+# load logs from file
+def load_logs(limit: int = 20):
+    if not os.path.exists(LOG_DATA_FILE):
+        return []
+    try:
+        with open(LOG_DATA_FILE, "r") as f:
+            lines = f.readlines()
+        return [json.loads(line) for line in lines[-limit:]]
+    except Exception as e:
+        print(f" Error reading logs: {e}")
+        return []
+
+# ---- routes -------
+
 @app.get("/")
 def root():
     return {
         "status" : "Vasu Running",
         "docs"  : "docs",
         "ingest" : "ingest",
-        "docs"  : "https://github.com/nlkguy/vasu-siem-xdr",
+        "repo"  : "https://github.com/nlkguy/vasu-siem-xdr",
         "author" : "https://github.com/nlkguy"
     }
 
